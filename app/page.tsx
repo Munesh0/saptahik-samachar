@@ -21,7 +21,7 @@ export default async function Home() {
   // Fetch hero article (latest published)
   const { data: heroArticles } = await supabase
     .from("articles")
-    .select("id, title, slug, excerpt, featured_image, published_at, created_at, categories(id, name, slug, color)")
+    .select("id, title, slug, excerpt, featured_image, published_at, created_at, published_date_bs, categories(id, name, slug, color)")
     .eq("status", "published")
     .order("published_at", { ascending: false })
     .limit(1);
@@ -31,7 +31,7 @@ export default async function Home() {
   // Fetch must-read articles (2nd-4th latest)
   const { data: mustReads } = await supabase
     .from("articles")
-    .select("id, title, slug, excerpt, featured_image, published_at, created_at, categories(id, name, slug, color)")
+    .select("id, title, slug, excerpt, featured_image, published_at, created_at, published_date_bs, categories(id, name, slug, color)")
     .eq("status", "published")
     .order("published_at", { ascending: false })
     .range(1, 3);
@@ -39,7 +39,7 @@ export default async function Home() {
   // Fetch power/special articles (4th-5th)
   const { data: powerReads } = await supabase
     .from("articles")
-    .select("id, title, slug, excerpt, featured_image, published_at, created_at, categories(id, name, slug, color)")
+    .select("id, title, slug, excerpt, featured_image, published_at, created_at, published_date_bs, categories(id, name, slug, color)")
     .eq("status", "published")
     .order("published_at", { ascending: false })
     .range(3, 4);
@@ -47,29 +47,19 @@ export default async function Home() {
   // Fetch latest news (remaining)
   const { data: latestNews } = await supabase
     .from("articles")
-    .select("id, title, slug, excerpt, featured_image, published_at, created_at, categories(id, name)")
+        .select("id, title, slug, excerpt, featured_image, published_at, created_at, published_date_bs, categories(id, name, slug, color)")
     .eq("status", "published")
     .order("published_at", { ascending: false })
     .range(5, 10);
 
-  const formatDate = (dateStr: string) => {
+  const formatDate = (dateStr: string, bsDate?: string | null) => {
+    if (bsDate) return bsDate;
     const date = new Date(dateStr);
-    try {
-      // Try Bikram Sambat (works in modern Chrome/Firefox)
-      return new Intl.DateTimeFormat("ne-NP", {
-        calendar: "bikram-sambat",
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-      }).format(date);
-    } catch {
-      // Fallback: Nepali locale with Nepali numerals (Gregorian calendar)
-      return date.toLocaleDateString("ne-NP", {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-      });
-    }
+    return date.toLocaleDateString("ne-NP", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
   };
 
   const allCategories = categories || [];
@@ -85,15 +75,15 @@ export default async function Home() {
       <header className="sticky top-0 z-50 bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16 lg:h-20">
-            <Link href="/" className="flex items-center gap-3">
-              <div className="w-12 h-12 lg:w-14 lg:h-14">
-                <Logo size={48} className="lg:w-14 lg:h-14" />
+            <Link href="/" className="flex items-center gap-4">
+              <div className="w-16 h-16 lg:w-20 lg:h-20">
+                <Logo size={64} className="lg:w-20 lg:h-20" />
               </div>
               <div className="hidden sm:block">
-                <h1 className="text-xl lg:text-2xl font-bold text-blue-900 leading-tight">
+                <h1 className="text-2xl lg:text-3xl font-bold text-blue-900 leading-tight">
                   साप्ताहिक समाचार
                 </h1>
-                <p className="text-xs text-gray-500 -mt-0.5">भद्रपुर, झापा</p>
+                <p className="text-sm text-gray-500 -mt-0.5">भद्रपुर, झापा — नेपालको पूर्वाञ्चलबाट प्रकाशित</p>
               </div>
             </Link>
 
@@ -146,7 +136,7 @@ export default async function Home() {
                       {(heroArticle.categories as any)?.name || "समाचार"}
                     </span>
                     <span className="text-violet-200 text-sm">
-                      {formatDate(heroArticle.published_at || heroArticle.created_at)}
+                      {formatDate(heroArticle.published_at || heroArticle.created_at, heroArticle.published_date_bs)}
                     </span>
                   </div>
                   <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black leading-tight mb-6">
@@ -257,7 +247,7 @@ export default async function Home() {
                           {(article.categories as any)?.name || "समाचार"}
                         </span>
                         <span className="text-gray-400 text-xs">
-                          {formatDate(article.published_at || article.created_at)}
+                          {formatDate(article.published_at || article.created_at, article.published_date_bs)}
                         </span>
                       </div>
                       <h3 className="text-xl font-bold text-gray-900 group-hover:text-blue-900 transition-colors leading-snug mb-2">
