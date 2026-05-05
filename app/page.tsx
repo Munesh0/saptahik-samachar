@@ -75,12 +75,12 @@ export default async function Home() {
       <header className="sticky top-0 z-50 bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
            <div className="flex items-center justify-between h-20 lg:h-24">
-             <Link href="/" className="flex items-center gap-5">
-              <div className="w-20 h-20 lg:w-24 lg:h-24 shrink-0">
+            <Link href="/" className="flex items-center gap-6">
+              <div className="w-20 h-20 lg:w-24 lg:h-24 shrink-0 rounded-2xl overflow-hidden bg-white shadow-sm flex items-center justify-center border border-gray-100">
                 <Logo size={96} />
               </div>
               <div className="hidden sm:block">
-                <h1 className="text-3xl lg:text-4xl font-black text-blue-900 leading-tight tracking-tight">
+                <h1 className="text-3xl lg:text-4xl font-black text-blue-900 leading-tight tracking-widest">
                   साप्ताहिक समाचार
                 </h1>
                 <p className="text-base lg:text-lg text-blue-700 font-semibold mt-1">
