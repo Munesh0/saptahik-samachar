@@ -107,6 +107,16 @@ CLEANUP_SECRET_KEY=any-random-secret-string-here
 
 **Never share or commit this file!**
 
+Use the Supabase **Project URL** for `NEXT_PUBLIC_SUPABASE_URL`, without
+`/rest/v1` or a table name. The Supabase SDK adds the API path automatically;
+including it in the variable causes requests to `/rest/v1/rest/v1/...` and 404 errors.
+
+On Netlify, set these variables under **Project configuration → Environment
+variables** for the relevant deploy context. After changing a `NEXT_PUBLIC_`
+variable, trigger a new deploy: Next.js embeds public variables in the browser
+bundle during the build. The clients also remove a trailing `/rest/v1` to tolerate
+a REST API URL pasted in place of the Project URL.
+
 ---
 
 ### STEP 3: Test Locally (5 minutes)
